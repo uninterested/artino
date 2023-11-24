@@ -1,6 +1,15 @@
 import 'react-native-gesture-handler'
+import { RecoilRoot } from 'recoil'
 import { AppRegistry } from 'react-native';
 import Router from '~/router/index';
 import { name as appName } from './app.json';
 
-AppRegistry.registerComponent(appName, () => Router);
+const App = () => {
+    return (
+        <RecoilRoot>
+            <Router />
+        </RecoilRoot>
+    )
+}
+
+AppRegistry.registerComponent(appName, () => App);

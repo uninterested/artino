@@ -5,8 +5,26 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import stacks, {keys} from './stacks';
+import {useRecoilValue} from 'recoil';
+import {themeValue} from '~/recoil-state/theme';
 
 const App = () => {
+  const theme = useRecoilValue(themeValue);
+
+  const themeMemo = useMemo(() => {
+    return {
+      dark: theme.isDark,
+      colors: {
+        primary: theme.primaryColor,
+        background: theme.backgroundColor,
+        card: 'transparent',
+        text: theme.textColor,
+        border: 'transparent',
+        notification: theme.backgroundColor,
+      },
+    };
+  }, [theme]);
+
   const Stack = useMemo(() => createNativeStackNavigator(), []);
 
   const Linking = useMemo(
@@ -44,8 +62,9 @@ const App = () => {
     gestureDirection: 'vertical',
     animationDuration: animated ? undefined : 0,
   });
+
   return (
-    <NavigationContainer linking={Linking}>
+    <NavigationContainer theme={themeMemo} linking={Linking}>
       <Stack.Navigator
         screenOptions={({route, navigation}) => {
           if (!navigation.isFocused) return horizontalConf(true);

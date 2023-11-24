@@ -34,3 +34,19 @@ declare type TRouteParams =
       present?: boolean;
     }
   | POJO;
+
+declare type TTheme = 'light' | 'dark';
+
+declare interface ThemeColorMap {
+  isDark: boolean;
+  textColor: string;
+  textColor2: string;
+  textColor3: string;
+  primaryColor: string;
+  backgroundColor: string;
+  backgroundColor2: string;
+  backgroundColor3: string;
+  borderColor: string;
+  placeholderColor: string;
+  switchBackgroundColor: string;
+}
