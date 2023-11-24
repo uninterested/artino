@@ -26,3 +26,11 @@ declare interface PINO {
 }
 
 type AsyncNoopBool<T = any> = (e?: T) => Promise<boolean>;
+
+declare type TRouteParams =
+  | undefined
+  | {
+      animated?: boolean;
+      present?: boolean;
+    }
+  | POJO;
