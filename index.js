@@ -1,3 +1,4 @@
+import 'react-native-devsettings'
 import 'react-native-gesture-handler'
 import { RecoilRoot } from 'recoil'
 import { AppRegistry } from 'react-native';
