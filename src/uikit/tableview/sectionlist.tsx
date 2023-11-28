@@ -1,15 +1,19 @@
 import React, {Component, LegacyRef} from 'react';
 import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   SectionList,
   SectionListData,
   SectionListProps,
+  SectionListRenderItemInfo,
   StyleSheet,
   View,
 } from 'react-native';
 import {State} from 'react-native-refresh';
 import Footer from './components/footer';
 import Refresher from './components/header';
-import StatusStr, {TFooterState} from './utils/status-str';
+import {statusStr, TFooterState} from './utils';
+import SwipeRow from './components/swipe-row';
 
 interface ICustomerProps<T = any, T2 = any>
   extends Omit<
@@ -18,11 +22,20 @@ interface ICustomerProps<T = any, T2 = any>
   > {
   hex?: string;
   sections: ReadonlyArray<SectionListData<T, T2>> | undefined;
-  refs?: LegacyRef<SectionList>;
+  refs?:
+    | ((e: SectionList<T>) => void)
+    | React.RefObject<SectionList<T> | undefined>; // Mutable
   onHeaderRefresh?: () => Promise<boolean | undefined>;
   onFooterRefresh?: () => Promise<boolean | undefined>;
   defaultLoadingComponent?: React.ReactElement;
   defaultEmptyComponent?: React.ReactElement;
+
+  // 是否可滑动
+  swipable?: boolean;
+  /** 渲染左侧的Action按钮 */
+  renderLeftAction?: (info: SectionListRenderItemInfo<T, T2>) => Element[];
+  /** 渲染右侧的Action按钮 */
+  renderRightAction?: (info: SectionListRenderItemInfo<T, T2>) => Element[];
 }
 
 interface ICustomerState {
@@ -43,6 +56,13 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
    * 是否正忙，避免多次处理下拉上提操作
    */
   private isBusy: boolean = false;
+
+  /**
+   * rowkeys map
+   */
+  private rowKeys: POJO = {};
+
+  private listRef: SectionList | null = null;
 
   private onPullingRefresh = () => {
     this.setState({
@@ -126,7 +146,7 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
       <Refresher
         hex={this.props.hex}
         refreshing={headerState === 'Refreshing'}
-        statusStr={StatusStr.statusStr(headerState)}
+        statusStr={statusStr(headerState)}
         onPullingRefresh={this.onPullingRefresh}
         onRefresh={this.onRefresh}
         onEndRefresh={this.onEndRefresh}
@@ -158,6 +178,49 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
     );
   };
 
+  private setScrollEnabled = (enable: boolean) => {
+    if (this.listRef) {
+      (this.listRef as any).setNativeProps({
+        scrollEnabled: enable,
+      });
+    }
+  };
+
+  private renderItem = (info: SectionListRenderItemInfo<T, any>) => {
+    const {swipable, renderItem: RenderItem} = this.props;
+    const origin = RenderItem?.(info);
+    if (swipable) {
+      let key = this.props.keyExtractor?.(info.item, info.index);
+      if (!key) key = (info.item as POJO).key;
+      return (
+        <SwipeRow
+          ref={e => (this.rowKeys[key || ''] = e)}
+          setScrollEnabled={this.setScrollEnabled}
+          swipeGestureBegan={() => this.closeWithOutKey(key)}
+          renderRightAction={() => this.props.renderRightAction?.(info) || []}
+          renderLeftAction={() => this.props.renderLeftAction?.(info) || []}>
+          {origin}
+        </SwipeRow>
+      );
+    }
+    return origin;
+  };
+
+  private onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const {swipable, onScroll} = this.props;
+    if (swipable) this.closeWithOutKey();
+    onScroll?.(e);
+  };
+
+  public closeWithOutKey = (key?: string) => {
+    const keys = Object.keys(this.rowKeys);
+    keys.forEach(_key => {
+      if (_key !== key) {
+        this.rowKeys[_key].safeClose();
+      }
+    });
+  };
+
   render() {
     const {style, sections} = this.props;
     const next = StyleSheet.flatten(style || {});
@@ -177,7 +240,18 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
         refreshControl={this.renderRefreshControl()}
         ListFooterComponent={this.renderFooter()}
         onEndReached={this.onEndReached}
-        ref={this.props.refs}
+        ref={(e: SectionList<T, any>) => {
+          this.listRef = e;
+          if (this.props.refs instanceof Function) this.props.refs?.(e);
+          else if (this.props.refs) {
+            const ref = this.props.refs as React.MutableRefObject<
+              SectionList<T> | undefined
+            >;
+            ref.current = e;
+          }
+        }}
+        onScroll={this.onScroll}
+        renderItem={this.renderItem}
       />
     );
   }
