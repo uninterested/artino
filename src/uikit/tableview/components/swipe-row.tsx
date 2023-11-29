@@ -6,6 +6,7 @@ import {
   PanResponder,
   PanResponderGestureState,
   PanResponderInstance,
+  Platform,
   StyleSheet,
   View,
 } from 'react-native';
@@ -118,9 +119,15 @@ export default class SwipeRow extends Component<
     _: GestureResponderEvent,
     gs: PanResponderGestureState,
   ) => {
-    const {dx} = gs;
+    const {dx, dy} = gs;
     const {triggerThreshold = 2} = this.props;
-    return Math.abs(dx) > triggerThreshold;
+    const invoke = Math.abs(dx) > triggerThreshold;
+    if (!invoke) {
+      if (Math.abs(dy) > triggerThreshold) {
+        this.props.swipeGestureBegan?.();
+      }
+    }
+    return invoke;
   };
 
   _onPanResponderMove = (
@@ -290,10 +297,11 @@ export default class SwipeRow extends Component<
     i: number,
     position: TDirectionType,
   ) => {
-    const {
+    let {
       layout: {width},
     } = e.nativeEvent;
     if (undefined === this.actionLayout[position][i] && !this.startVELOCITY) {
+      width += 10;
       this.actionLayout[position][i] = width;
       this.actionPositionValue[position][i].setValue(-width);
       this.actionRef[position][i].setValue(width);

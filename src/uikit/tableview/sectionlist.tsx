@@ -188,10 +188,16 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
 
   private renderItem = (info: SectionListRenderItemInfo<T, any>) => {
     const {swipable, renderItem: RenderItem} = this.props;
-    const origin = RenderItem?.(info);
+    let item = RenderItem?.(info)!;
     if (swipable) {
       let key = this.props.keyExtractor?.(info.item, info.index);
       if (!key) key = (info.item as POJO).key;
+      const origin = React.cloneElement(item, {
+        onPress: () => {
+          this.closeWithOutKey(key);
+          item.props?.onPress?.();
+        },
+      });
       return (
         <SwipeRow
           ref={e => (this.rowKeys[key || ''] = e)}
@@ -203,7 +209,7 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
         </SwipeRow>
       );
     }
-    return origin;
+    return item;
   };
 
   private onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
