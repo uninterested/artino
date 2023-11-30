@@ -1,12 +1,18 @@
 import React, {useCallback, useMemo} from 'react';
 import {LinkingOptions, NavigationContainer} from '@react-navigation/native';
+import {NativeStackNavigationOptions} from '@react-navigation/native-stack';
 import {
-  NativeStackNavigationOptions,
-  createNativeStackNavigator,
-} from '@react-navigation/native-stack';
+  CardStyleInterpolators,
+  StackNavigationOptions,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import stacks, {keys} from './stacks';
 import {useRecoilValue} from 'recoil';
 import {themeValue} from '~/recoil-state/theme';
+import {Dimensions, Platform} from 'react-native';
+
+const kDefaultDuration: number = 250;
+const kDefaultNoAnimationDuration: number = 0;
 
 const App = () => {
   const theme = useRecoilValue(themeValue);
@@ -25,14 +31,14 @@ const App = () => {
     };
   }, [theme]);
 
-  const Stack = useMemo(() => createNativeStackNavigator(), []);
+  const scaleWH = useMemo(() => Dimensions.get('window'), []);
+
+  const Stack = useMemo(() => createStackNavigator(), []);
 
   const Linking = useMemo(
     (): LinkingOptions<POJO> => ({prefixes: ['artino://']}),
     [],
   );
-
-  const nullHeader = useCallback(() => null, []);
 
   const routeStacks = useMemo(
     () =>
@@ -42,26 +48,83 @@ const App = () => {
     [stacks],
   );
 
-  const horizontalConf = (animated: boolean): NativeStackNavigationOptions => ({
-    headerShown: false,
-    headerTransparent: true,
-    header: nullHeader,
-    gestureEnabled: true,
-    fullScreenGestureEnabled: true,
-    animation: 'slide_from_right',
-    animationDuration: animated ? undefined : 0,
-  });
+  const horizontalConf = (animated: boolean = true): StackNavigationOptions => {
+    return {
+      gestureDirection: 'horizontal',
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS.bind({
+        animated,
+      }),
+      header: () => null,
+      headerShown: false,
+      cardOverlayEnabled: false,
+      cardShadowEnabled: false,
+      headerShadowVisible: false,
+      headerTransparent: true,
+      gestureEnabled: true,
+      cardStyle: {
+        backgroundColor: 'transparent',
+      },
+      transitionSpec: {
+        open: {
+          animation: 'timing',
+          config: {
+            duration: animated ? kDefaultDuration : kDefaultNoAnimationDuration,
+          },
+        },
+        close: {
+          animation: 'timing',
+          config: {
+            duration: kDefaultDuration,
+          },
+        },
+      },
+      headerStyle: {
+        height: 0,
+        backgroundColor: 'transparent',
+      },
+      gestureResponseDistance: scaleWH.width,
+    };
+  };
 
-  const verticalConf = (animated: boolean): NativeStackNavigationOptions => ({
-    headerShown: false,
-    headerTransparent: true,
-    header: nullHeader,
-    gestureEnabled: true,
-    fullScreenGestureEnabled: true,
-    animation: 'slide_from_bottom',
-    gestureDirection: 'vertical',
-    animationDuration: animated ? undefined : 0,
-  });
+  const verticalConf = (
+    animated: boolean = true,
+    card: boolean = false,
+  ): StackNavigationOptions => {
+    const isIos = Platform.OS === 'ios';
+    return {
+      gestureDirection: 'vertical',
+      cardStyleInterpolator:
+        card && isIos
+          ? CardStyleInterpolators.forModalPresentationIOS
+          : CardStyleInterpolators.forVerticalIOS,
+      header: () => null,
+      cardOverlayEnabled: true,
+      headerShown: false,
+      cardShadowEnabled: false,
+      headerShadowVisible: false,
+      headerTransparent: true,
+      gestureEnabled: true,
+      transitionSpec: {
+        open: {
+          animation: 'timing',
+          config: {
+            duration: animated ? kDefaultDuration : kDefaultNoAnimationDuration,
+          },
+        },
+        close: {
+          animation: 'timing',
+          config: {
+            duration: kDefaultDuration,
+          },
+        },
+      },
+      headerStyle: {
+        height: 0,
+        backgroundColor: 'transparent',
+      },
+      gestureResponseDistance: scaleWH.height,
+    };
+  };
 
   return (
     <NavigationContainer theme={themeMemo} linking={Linking}>
