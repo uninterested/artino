@@ -1,0 +1,26 @@
+diff --git a/node_modules/@react-navigation/stack/src/TransitionConfigs/CardStyleInterpolators.tsx b/node_modules/@react-navigation/stack/src/TransitionConfigs/CardStyleInterpolators.tsx
+index fc5db36..6c9539a 100644
+--- a/node_modules/@react-navigation/stack/src/TransitionConfigs/CardStyleInterpolators.tsx
++++ b/node_modules/@react-navigation/stack/src/TransitionConfigs/CardStyleInterpolators.tsx
+@@ -30,7 +30,7 @@ export function forHorizontalIOS({
+     ? multiply(
+         next.progress.interpolate({
+           inputRange: [0, 1],
+-          outputRange: [0, screen.width * -0.3],
++          outputRange: [0, this.animated ? screen.width * -0.3 : 0],
+           extrapolate: 'clamp',
+         }),
+         inverted
+diff --git a/node_modules/@react-navigation/stack/src/views/Stack/CardStack.tsx b/node_modules/@react-navigation/stack/src/views/Stack/CardStack.tsx
+index 545e87d..7b51453 100755
+--- a/node_modules/@react-navigation/stack/src/views/Stack/CardStack.tsx
++++ b/node_modules/@react-navigation/stack/src/views/Stack/CardStack.tsx
+@@ -666,7 +666,7 @@ export default class CardStack extends React.Component<Props, State> {
+                 key={route.key}
+                 style={StyleSheet.absoluteFill}
+                 enabled={detachInactiveScreens}
+-                active={isScreenActive}
++                active={1}
+                 freezeOnBlur={freezeOnBlur}
+                 pointerEvents="box-none"
+               >
