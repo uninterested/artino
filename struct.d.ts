@@ -27,6 +27,8 @@ declare interface PINO {
 
 type Noop = () => void;
 
+type NoopT<T = any> = (e: T) => void;
+
 type AsyncNoopBool<T = any> = (e?: T) => Promise<boolean>;
 
 declare type TRouteParams =

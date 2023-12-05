@@ -1,31 +1,46 @@
 import {FC, PropsWithChildren, useMemo} from 'react';
-import {Text, TextProps} from 'react-native';
+import {Animated, StyleSheet, Text, TextProps} from 'react-native';
+import {
+  BaseAnimationBuilder,
+  EntryExitAnimationFunction,
+} from 'react-native-reanimated';
+import {ReanimatedKeyframe} from 'react-native-reanimated/lib/typescript/reanimated2/layoutReanimation/animationBuilder/Keyframe';
 import {useRecoilValue} from 'recoil';
 import {themeValue} from '~/recoil-state/theme';
 
 interface IFontTextProps extends TextProps {
   level?: number;
+  entering?:
+    | BaseAnimationBuilder
+    | typeof BaseAnimationBuilder
+    | EntryExitAnimationFunction
+    | ReanimatedKeyframe;
 }
 
 const FontText: FC<PropsWithChildren<IFontTextProps>> = props => {
   const color = useRecoilValue(themeValue);
-  const {level, style, ...rest} = props;
+  const {level, style = {}, ...rest} = props;
+  const flattenStyle = StyleSheet.flatten(style);
+
   const textColor = useMemo(() => {
     switch (level) {
       case 0:
-        return {color: color.textColor};
+        return {color: flattenStyle?.color || color.textColor};
       case 1:
-        return {color: color.textColor2};
+        return {color: flattenStyle?.color || color.textColor2};
       case 2:
-        return {color: color.textColor3};
+        return {color: flattenStyle?.color || color.textColor3};
       default:
-        return {color: color.textColor};
+        return {color: flattenStyle?.color || color.textColor};
     }
   }, [level, color]);
+
+  const Comp = (props.entering ? Animated.Text : Text) as any;
+
   return (
-    <Text {...rest} style={[style, textColor]}>
+    <Comp {...rest} style={[style, textColor]}>
       {props.children}
-    </Text>
+    </Comp>
   );
 };
 
