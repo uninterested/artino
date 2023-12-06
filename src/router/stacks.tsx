@@ -4,18 +4,24 @@ import Main from '~/pages/main';
 import Home from '~/pages/home';
 //movie start
 import Movie from '~/pages/movie/index';
+import MovieDetail from '~/pages/movie/detail';
 //movie end
 
 const stacks = {
   Main,
   Home,
   Movie,
+  MovieDetail,
 };
 
 export type TRouterParams = {
   Main: TRouteParams;
   Home: TRouteParams;
   Movie: TRouteParams;
+  MovieDetail: TRouteParams & {
+    id: string;
+    position?: IPosition;
+  };
 };
 
 export type keys = keyof TRouterParams;

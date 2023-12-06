@@ -30,7 +30,7 @@ export interface IHeadersProps {
 }
 
 const Headers: React.FC<IHeadersProps> = props => {
-  const {textColor, textColor2, borderColor} = useRecoilValue(themeValue);
+  const {borderColor} = useRecoilValue(themeValue);
   const navigation = useNavigation() as TNavigation;
   const {top} = useSafeAreaInsets();
   const onLeftClick = () => {
@@ -50,20 +50,16 @@ const Headers: React.FC<IHeadersProps> = props => {
     if (!left) return null;
     let elem: null | React.ReactNode = null;
     if (left === true) {
-      elem = (
-        <IconFont style={[style.btnIcon, {color: textColor}]}>
-          {`\ue60d`}
-        </IconFont>
-      );
+      elem = <IconFont style={style.btnIcon}>{`\ue60d`}</IconFont>;
     } else if (left.type === 'TEXT') {
       elem = (
-        <Text style={[style.btnText, {color: left.color || textColor}]}>
+        <Text style={[style.btnText, {color: left.color || undefined}]}>
           {left.value}
         </Text>
       );
     } else if (left.type === 'ICON') {
       elem = (
-        <IconFont style={[style.btnIcon, {color: left.color || textColor}]}>
+        <IconFont style={[style.btnIcon, {color: left.color || undefined}]}>
           {left.value}
         </IconFont>
       );
@@ -90,13 +86,13 @@ const Headers: React.FC<IHeadersProps> = props => {
     let elem: null | React.ReactNode = null;
     if (right.type === 'TEXT') {
       elem = (
-        <Text style={[style.btnText, {color: right.color || textColor}]}>
+        <Text style={[style.btnText, {color: right.color || undefined}]}>
           {right.value}
         </Text>
       );
     } else if (right.type === 'ICON') {
       elem = (
-        <IconFont style={[style.btnIcon, {color: right.color || textColor}]}>
+        <IconFont style={[style.btnIcon, {color: right.color || undefined}]}>
           {right.value}
         </IconFont>
       );
@@ -122,7 +118,7 @@ const Headers: React.FC<IHeadersProps> = props => {
       return <View style={style.headerView}>{title}</View>;
     }
     return (
-      <Text numberOfLines={1} style={[style.title, {color: textColor}]}>
+      <Text numberOfLines={1} style={[style.title, {color: undefined}]}>
         {title as string}
       </Text>
     );

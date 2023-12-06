@@ -9,18 +9,16 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
   },
   title: {
-    color: 'rgba(255,255,255,0.8)',
     fontSize: 14,
   },
   detailTitle: {
     flex: 1,
-    color: 'rgb(124,125,131)',
     fontSize: 13,
     textAlign: 'right',
   },
   line: {
     height: 0.5,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(160,160,160,0.3)',
     bottom: 0,
     position: 'absolute',
     left: 15,

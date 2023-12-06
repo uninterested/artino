@@ -56,7 +56,10 @@ class Cell<T> extends Component<T & ICellProps> {
     if (!detail) return null;
     if (React.isValidElement(detail)) return detail;
     return (
-      <Text numberOfLines={1} style={[style.detailTitle, detailStyle]}>
+      <Text
+        numberOfLines={1}
+        level={2}
+        style={[style.detailTitle, detailStyle]}>
         {detail}
       </Text>
     );

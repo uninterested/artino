@@ -36,10 +36,18 @@ declare type TRouteParams =
   | {
       animated?: boolean;
       present?: boolean;
+      gestureEnabled?: boolean;
     }
   | POJO;
 
 declare type TTheme = 'light' | 'dark';
+
+declare interface IPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 declare interface ThemeColorMap {
   isDark: boolean;

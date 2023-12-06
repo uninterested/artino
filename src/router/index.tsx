@@ -48,7 +48,10 @@ const App = () => {
     [stacks],
   );
 
-  const horizontalConf = (animated: boolean = true): StackNavigationOptions => {
+  const horizontalConf = (
+    animated: boolean = true,
+    gestureEnabled: boolean = true,
+  ): StackNavigationOptions => {
     return {
       gestureDirection: 'horizontal',
       cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS.bind({
@@ -60,7 +63,7 @@ const App = () => {
       cardShadowEnabled: false,
       headerShadowVisible: false,
       headerTransparent: true,
-      gestureEnabled: true,
+      gestureEnabled: true, //gestureEnabled,
       cardStyle: {
         backgroundColor: 'transparent',
       },
@@ -133,9 +136,13 @@ const App = () => {
           if (!navigation.isFocused) return horizontalConf(true);
           const animated = (route.params as POJO)?.animated;
           const present = (route.params as POJO)?.present;
+          const gestureEnabled = (route.params as POJO)?.gestureEnabled;
           return present
             ? verticalConf([undefined, true].includes(animated))
-            : horizontalConf([undefined, true].includes(animated));
+            : horizontalConf(
+                [undefined, true].includes(animated),
+                gestureEnabled,
+              );
         }}>
         {routeStacks}
       </Stack.Navigator>

@@ -10,13 +10,22 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   cover: {
-    width: wp(100),
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
+  coverImg: {
     height: hp(35),
     position: 'absolute',
-    zIndex: -1,
     left: 0,
     right: 0,
     top: 0,
+    zIndex: -1,
+  },
+  carousel: {
+    width: wp(100),
+    height: wp(110),
+    zIndex: 100,
+    elevation: 1,
   },
   card: {
     borderRadius: wp(25),
@@ -64,11 +73,11 @@ export default StyleSheet.create({
     borderRadius: 24,
     position: 'absolute',
     bottom: 0,
-    paddingTop: 10,
+    paddingTop: 0,
     left: 10,
     right: 10,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   bookText: {
     fontSize: 12,
