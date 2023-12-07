@@ -93,8 +93,8 @@ const Movie = () => {
             style={[styles.container, styles.box]}
             disabled={activeIndex !== index}
             onPress={onItemClick(item)}>
-            <FastImage
-              source={{uri: item.icon}}
+            <Animated.Image
+              source={{uri: item.icon, cache: 'force-cache'}}
               style={styles.icon}
               resizeMode="cover"
             />

@@ -5,10 +5,20 @@ import usePageHooks from './hooks';
 import BackgroundView from '~/uikit/themes/background-view';
 import {useRoute} from '@react-navigation/native';
 import {IMovieModel} from '../index/types';
-import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
+import Animated, {
+  FadeInRight,
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import {wp} from '~/utils/responsive';
+import Text from '~/uikit/themes/font-text';
+import {TouchableOpacity, View} from 'react-native';
+import IconFont from '~/uikit/themes/icon-font';
+import {useRecoilValue} from 'recoil';
+import {themeValue} from '~/recoil-state/theme';
 
 const MovieDetail = () => {
+  const {primaryColor, borderColor} = useRecoilValue(themeValue);
   const hooks = usePageHooks();
   const router = useRoute();
   const {position, id, item} = router.params as {
@@ -29,7 +39,7 @@ const MovieDetail = () => {
       updateStatus('init');
       setTimeout(() => {
         updateStatus('idle');
-      }, 10);
+      }, 5);
     });
   }, []);
 
@@ -76,8 +86,38 @@ const MovieDetail = () => {
             styles.iconWrap,
           ]}
           resizeMode="cover"
-          source={{uri: item.icon}}
+          source={{uri: item.icon, cache: 'force-cache'}}
         />
+        <Text layout={maskLayout} style={styles.title} numberOfLines={1}>
+          {item.title}
+        </Text>
+        <View style={[styles.starWrap, styles.topOffset]}>
+          {new Array(5)
+            .fill(0)
+            .map((_, i) => (i < item.stars ? 1 : 0))
+            .map((active, index) => (
+              <IconFont
+                key={index}
+                style={[
+                  styles.wrap,
+                  {color: active ? primaryColor : undefined},
+                ]}>
+                {'\ue612'}
+              </IconFont>
+            ))}
+        </View>
+        <View style={[styles.starWrap, styles.topOffset]}>
+          {item.type.map((e, i) => (
+            <Text style={[styles.type, {borderColor}]} key={i}>
+              {e}
+            </Text>
+          ))}
+        </View>
+        <BackgroundView style={[styles.topOffset, styles.book]}>
+          <TouchableOpacity activeOpacity={1}>
+            <Text style={styles.bookText}>立即订票</Text>
+          </TouchableOpacity>
+        </BackgroundView>
       </BackgroundView>
     </ReactContext.Provider>
   );

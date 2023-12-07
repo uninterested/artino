@@ -3,6 +3,7 @@ import {Animated, StyleSheet, Text, TextProps} from 'react-native';
 import {
   BaseAnimationBuilder,
   EntryExitAnimationFunction,
+  LayoutAnimationFunction,
 } from 'react-native-reanimated';
 import {ReanimatedKeyframe} from 'react-native-reanimated/lib/typescript/reanimated2/layoutReanimation/animationBuilder/Keyframe';
 import {useRecoilValue} from 'recoil';
@@ -10,6 +11,10 @@ import {themeValue} from '~/recoil-state/theme';
 
 interface IFontTextProps extends TextProps {
   level?: number;
+  layout?:
+    | BaseAnimationBuilder
+    | LayoutAnimationFunction
+    | typeof BaseAnimationBuilder;
   entering?:
     | BaseAnimationBuilder
     | typeof BaseAnimationBuilder
@@ -35,7 +40,7 @@ const FontText: FC<PropsWithChildren<IFontTextProps>> = props => {
     }
   }, [level, color]);
 
-  const Comp = (props.entering ? Animated.Text : Text) as any;
+  const Comp = (props.entering || props.layout ? Animated.Text : Text) as any;
 
   return (
     <Comp {...rest} style={[style, textColor]}>

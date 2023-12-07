@@ -10,10 +10,7 @@ import {IPageMethodProps, IPageResultProps, TLayoutStatus} from '../types';
 
 const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
   // layout config
-  const layoutConfig = useMemo(
-    () => ({duration: 400, easing: Easing.circle}),
-    [],
-  );
+  const layoutConfig = useMemo(() => ({duration: 360, easing: Easing.exp}), []);
   // 转场值
   const transactionValue = useSharedValue(0);
   // layout状态

@@ -58,7 +58,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '0',
             title: '变形金刚：超能勇士崛起',
-            icon: 'https://p0.pipi.cn/mmdb/fb7386712c992367cb07acd75f94b0e41c39b.jpg?imageView2/1',
+            icon: 'https://p0.pipi.cn/mmdb/fb7386712c992367cb07acd75f94b0e41c39b.jpg?imageView2/1/w/600',
             cover:
               'https://p0.pipi.cn/friday/f9d8208398be7f34c664719c1d88114e.jpg?imageView2/2',
             video:
@@ -102,7 +102,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '1',
             title: '蜡笔小新：谜团！花之天下春日部学院',
-            icon: 'https://p0.pipi.cn/mmdb/d2dad5927a387addd217898d7b16c47528458.jpg?imageView2/1',
+            icon: 'https://p0.pipi.cn/mmdb/d2dad5927a387addd217898d7b16c47528458.jpg?imageView2/1/w/600',
             cover:
               'https://p1.meituan.net/movie/0ed22e57b534c1daeb61146dd07399d5372214.jpg',
             video:
@@ -146,7 +146,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '2',
             title: '拯救嫌疑人',
-            icon: 'https://p0.pipi.cn/mmdb/fb7386920fa3399257b53575e4a7e61da8cd7.png?imageView2/1',
+            icon: 'https://p0.pipi.cn/mmdb/fb7386920fa3399257b53575e4a7e61da8cd7.png?imageView2/1/w/600',
             cover:
               'https://p0.pipi.cn/friday/70990365272702d4d8932aa5b48d0af8.jpg?imageView2/2',
             video:
