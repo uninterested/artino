@@ -9,7 +9,7 @@ import {
 import stacks, {keys} from './stacks';
 import {useRecoilValue} from 'recoil';
 import {themeValue} from '~/recoil-state/theme';
-import {Dimensions, Platform} from 'react-native';
+import {Dimensions, Platform, StatusBar} from 'react-native';
 
 const kDefaultDuration: number = 250;
 const kDefaultNoAnimationDuration: number = 0;
@@ -63,7 +63,7 @@ const App = () => {
       cardShadowEnabled: false,
       headerShadowVisible: false,
       headerTransparent: true,
-      gestureEnabled: true, //gestureEnabled,
+      gestureEnabled: gestureEnabled,
       cardStyle: {
         backgroundColor: 'transparent',
       },
@@ -131,6 +131,12 @@ const App = () => {
 
   return (
     <NavigationContainer theme={themeMemo} linking={Linking}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        animated
+        barStyle={themeMemo.dark ? 'light-content' : 'dark-content'}
+      />
       <Stack.Navigator
         screenOptions={({route, navigation}) => {
           if (!navigation.isFocused) return horizontalConf(true);

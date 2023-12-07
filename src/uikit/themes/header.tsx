@@ -5,6 +5,8 @@ import {
   Image,
   ImageURISource,
   TouchableOpacity,
+  ViewStyle,
+  StyleProp,
 } from 'react-native';
 import Text from '~/uikit/themes/font-text';
 import IconFont from '~/uikit/themes/icon-font';
@@ -13,6 +15,7 @@ import {useRecoilValue} from 'recoil';
 import {themeValue} from '~/recoil-state/theme';
 import {TNavigation} from '~/router/stacks';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Animated from 'react-native-reanimated';
 
 declare interface IButtonProps {
   type: 'ICON' | 'TEXT' | 'IMAGE';
@@ -22,6 +25,8 @@ declare interface IButtonProps {
 }
 
 export interface IHeadersProps {
+  barStyle?: StyleProp<ViewStyle>;
+  animated?: boolean;
   left?: IButtonProps | boolean;
   title?: string | React.JSX.Element;
   right?: IButtonProps;
@@ -126,8 +131,10 @@ const Headers: React.FC<IHeadersProps> = props => {
 
   const {border = true} = props;
 
+  const Comp = props.animated ? Animated.View : View;
+
   return (
-    <View
+    <Comp
       style={[
         style.header,
         {height: top + 44},
@@ -144,11 +151,12 @@ const Headers: React.FC<IHeadersProps> = props => {
               ...style.fixed,
             }
           : undefined,
+        props.barStyle,
       ]}>
       {renderLeft()}
       {renderTitle()}
       {renderRight()}
-    </View>
+    </Comp>
   );
 };
 
@@ -165,7 +173,6 @@ const style = StyleSheet.create({
     top: 0,
     right: 0,
     zIndex: 9999,
-    elevation: 1,
   },
   btn: {
     height: 44,

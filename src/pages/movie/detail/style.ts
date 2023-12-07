@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
+import {wp} from '~/utils/responsive';
+import {KButtonHeight} from '../config';
 
 export default StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -9,18 +14,19 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    padding: 20,
     position: 'absolute',
     overflow: 'hidden',
+    alignItems: 'center',
   },
   clear: {
     flex: 1,
     overflow: 'visible',
   },
   iconWrap: {
-    backgroundColor: 'transparent',
+    overflow: 'hidden',
   },
   icon: {
+    backgroundColor: 'transparent',
     flex: 1,
   },
   title: {
@@ -31,6 +37,9 @@ export default StyleSheet.create({
   },
   topOffset: {
     marginTop: 14,
+  },
+  topOffsetNormal: {
+    marginTop: 10,
   },
   starWrap: {
     flexDirection: 'row',
@@ -50,18 +59,60 @@ export default StyleSheet.create({
     marginHorizontal: 4,
   },
   book: {
-    height: 48,
+    height: KButtonHeight,
     borderRadius: 24,
     position: 'absolute',
     bottom: 0,
-    paddingTop: 0,
-    left: 30,
-    right: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    left: 10,
+    right: 10,
+    overflow: 'hidden',
   },
   bookText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
+  },
+  scrollview: {
+    backgroundColor: 'transparent',
+    minHeight: '100%',
+  },
+  body: {
+    paddingHorizontal: 16,
+    width: wp(100),
+  },
+  cast: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  actorMask: {
+    marginRight: wp(4),
+  },
+  radius: {
+    borderRadius: 10,
+  },
+  actor: {
+    width: wp(32),
+    height: wp(32),
+  },
+  actorName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  infoWrap: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+  },
+  info: {
+    fontWeight: 'bold',
+    fontSize: 13,
+    lineHeight: 28,
+  },
+  detail: {
+    fontWeight: 'normal',
+    fontSize: 12,
+  },
+  story: {
+    fontSize: 12,
+    lineHeight: 18,
   },
 });

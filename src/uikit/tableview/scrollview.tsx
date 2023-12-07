@@ -2,7 +2,7 @@ import React, {Component, LegacyRef} from 'react';
 import {ScrollView, ScrollViewProps} from 'react-native';
 import {State} from 'react-native-refresh';
 import Refresher from './components/header';
-import StatusStr from './utils/status-str';
+import {statusStr} from './utils/index';
 
 interface ICustomerProps extends ScrollViewProps {
   hex?: string;
@@ -67,7 +67,7 @@ class Customer<T extends ICustomerProps> extends Component<T, ICustomerState> {
       <Refresher
         hex={this.props.hex}
         refreshing={headerState === 'Refreshing'}
-        statusStr={StatusStr.statusStr(headerState)}
+        statusStr={statusStr(headerState)}
         onPullingRefresh={this.onPullingRefresh}
         onRefresh={this.onRefresh}
         onEndRefresh={this.onEndRefresh}

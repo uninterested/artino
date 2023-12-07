@@ -1,5 +1,12 @@
 import {FC, PropsWithChildren, forwardRef, useMemo} from 'react';
-import {StyleProp, StyleSheet, View, ViewProps, ViewStyle} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  View,
+  ScrollView,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 import Animated, {
   BaseAnimationBuilder,
   EntryExitAnimationFunction,
@@ -57,7 +64,9 @@ const BackgroundView: FC<PropsWithChildren<IBackgroundViewProps>> = forwardRef(
     }, [level, color]);
 
     const Comp = (
-      props.entering || props.layout || props.animated ? Animated.View : View
+      props.entering || props.layout || props.animated
+        ? Animated.ScrollView
+        : ScrollView
     ) as any;
 
     return (

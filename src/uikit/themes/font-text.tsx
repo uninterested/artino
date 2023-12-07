@@ -1,6 +1,6 @@
 import {FC, PropsWithChildren, useMemo} from 'react';
-import {Animated, StyleSheet, Text, TextProps} from 'react-native';
-import {
+import {StyleSheet, Text, TextProps} from 'react-native';
+import Animated, {
   BaseAnimationBuilder,
   EntryExitAnimationFunction,
   LayoutAnimationFunction,
@@ -11,6 +11,7 @@ import {themeValue} from '~/recoil-state/theme';
 
 interface IFontTextProps extends TextProps {
   level?: number;
+  animated?: boolean;
   layout?:
     | BaseAnimationBuilder
     | LayoutAnimationFunction
@@ -40,7 +41,9 @@ const FontText: FC<PropsWithChildren<IFontTextProps>> = props => {
     }
   }, [level, color]);
 
-  const Comp = (props.entering || props.layout ? Animated.Text : Text) as any;
+  const Comp = (
+    props.entering || props.layout || props.animated ? Animated.Text : Text
+  ) as any;
 
   return (
     <Comp {...rest} style={[style, textColor]}>

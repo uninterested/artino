@@ -1,16 +1,17 @@
-import {
-  LayoutAnimation,
-  LayoutAnimationsValues,
-  SharedValue,
-} from 'react-native-reanimated';
+import {DefaultStyle} from 'react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes';
 
-export type TLayoutStatus = 'init' | 'idle' | 'destory';
+export type TLayoutStatus = 0 | 1;
 
 export interface IPageResultProps {
+  layoutDuration: number;
+  maskStyle: DefaultStyle;
+  iconStyle: DefaultStyle;
+  bookStyle: DefaultStyle;
+  bookTextStyle: DefaultStyle;
+  navigateStyle: DefaultStyle;
   layoutStatus: TLayoutStatus;
-  transactionValue: SharedValue<number>;
-  maskLayout: (values: LayoutAnimationsValues) => LayoutAnimation;
 }
 export interface IPageMethodProps {
   updateStatus: NoopT<TLayoutStatus>;
+  onBooking: Noop;
 }

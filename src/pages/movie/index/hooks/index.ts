@@ -1,13 +1,18 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useMemo, useRef, useState} from 'react';
 import {IMovieModel, IPageMethodProps, IPageResultProps} from '../types';
 import Toast from '~/uikit/toast';
 import {themeState} from '~/recoil-state/theme';
 import {useRecoilValue} from 'recoil';
 import {throttle} from 'lodash';
-import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import {LayoutChangeEvent, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {TNavigation} from '~/router/stacks';
+import {wp} from '~/utils/responsive';
 
 const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
   const navigation = useNavigation() as TNavigation;
@@ -24,6 +29,19 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   // view的ref，用于获取在屏幕的位置
   const viewRef = useRef<View>(null);
+
+  const layoutValues = useMemo(() => {
+    const itemWidth = wp(50);
+    const itemHeight = wp(95);
+    const centerOffset = wp(25);
+    const offsetX = wp(15);
+    return {
+      itemWidth,
+      itemHeight,
+      centerOffset,
+      offsetX,
+    };
+  }, []);
 
   const sharedValue = useRef([
     useSharedValue(0),
@@ -47,6 +65,60 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
 
   const [data, setData] = useState<IMovieModel[] | undefined>();
 
+  const animationStyle = useCallback(
+    (value: number) => {
+      'worklet';
+
+      const itemGap = interpolate(
+        value,
+        [-3, -2, -1, 0, 1, 2, 3],
+        [
+          layoutValues.offsetX * -2,
+          -layoutValues.offsetX,
+          0,
+          0,
+          0,
+          layoutValues.offsetX,
+          layoutValues.offsetX * 2,
+        ],
+      );
+
+      const translateX =
+        interpolate(
+          value,
+          [-1, 0, 1],
+          [-layoutValues.itemWidth * 1.2, 0, layoutValues.itemWidth * 1.2],
+        ) +
+        layoutValues.centerOffset -
+        itemGap;
+
+      const translateY = interpolate(
+        value,
+        [-1, -0.5, 0, 0.5, 1],
+        [65, 25, 20, 25, 65],
+      );
+
+      const scale = interpolate(
+        value,
+        [-1, -0.5, 0, 0.5, 1],
+        [0.74, 0.8, 1, 0.8, 0.74],
+      );
+
+      return {
+        transform: [
+          {
+            translateX,
+          },
+          {
+            translateY,
+          },
+          {scale},
+        ],
+      };
+    },
+    [layoutValues.centerOffset],
+  );
+
   /**
    * 模拟数据
    * @returns
@@ -58,7 +130,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '0',
             title: '变形金刚：超能勇士崛起',
-            icon: 'https://p0.pipi.cn/mmdb/fb7386712c992367cb07acd75f94b0e41c39b.jpg?imageView2/1/w/600',
+            icon: 'https://p0.pipi.cn/mmdb/fb7386712c992367cb07acd75f94b0e41c39b.jpg?imageView2/1',
             cover:
               'https://p0.pipi.cn/friday/f9d8208398be7f34c664719c1d88114e.jpg?imageView2/2',
             video:
@@ -102,7 +174,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '1',
             title: '蜡笔小新：谜团！花之天下春日部学院',
-            icon: 'https://p0.pipi.cn/mmdb/d2dad5927a387addd217898d7b16c47528458.jpg?imageView2/1/w/600',
+            icon: 'https://p0.pipi.cn/mmdb/d2dad5927a387addd217898d7b16c47528458.jpg?imageView2/1',
             cover:
               'https://p1.meituan.net/movie/0ed22e57b534c1daeb61146dd07399d5372214.jpg',
             video:
@@ -146,7 +218,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           {
             id: '2',
             title: '拯救嫌疑人',
-            icon: 'https://p0.pipi.cn/mmdb/fb7386920fa3399257b53575e4a7e61da8cd7.png?imageView2/1/w/600',
+            icon: 'https://p0.pipi.cn/mmdb/fb7386920fa3399257b53575e4a7e61da8cd7.png?imageView2/1',
             cover:
               'https://p0.pipi.cn/friday/70990365272702d4d8932aa5b48d0af8.jpg?imageView2/2',
             video:
@@ -325,10 +397,10 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
       setTimeout(() => {
         viewRef.current?.measure((x, y, width, height, pageX, pageY) => {
           layoutRef.current = {
-            left: Math.round(pageX),
-            top: Math.round(pageY),
-            width: Math.round(width),
-            height: Math.round(height),
+            left: pageX,
+            top: pageY,
+            width: width,
+            height: height,
           };
         });
       }, 500);
@@ -348,7 +420,16 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
 
   // return hooks
   return [
-    {data, colors, sharedStyle, coverIndex, viewRef, activeIndex},
+    {
+      data,
+      colors,
+      sharedStyle,
+      coverIndex,
+      viewRef,
+      activeIndex,
+      animationStyle,
+      layoutValues,
+    },
     {init, onScroll, onScrollBegin, onScrollEnd, onItemClick, onItemLayout},
   ];
 };

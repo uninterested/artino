@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {hp, wp} from '~/utils/responsive';
+import {KButtonHeight} from '../config';
 
 export default StyleSheet.create({
   container: {
@@ -69,7 +70,7 @@ export default StyleSheet.create({
     marginHorizontal: 4,
   },
   book: {
-    height: 48,
+    height: KButtonHeight,
     borderRadius: 24,
     position: 'absolute',
     bottom: 0,
@@ -80,7 +81,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   bookText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
   },
 });

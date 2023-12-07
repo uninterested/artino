@@ -1,5 +1,5 @@
 import {LayoutChangeEvent, View} from 'react-native';
-import {SharedValue} from 'react-native-reanimated';
+import {DefaultStyle} from 'react-native-reanimated/lib/typescript/reanimated2/hook/commonTypes';
 
 export interface IMovieModel {
   id: string;
@@ -25,6 +25,8 @@ export interface IPageResultProps {
   colors: string[];
   coverIndex: string;
   activeIndex: number;
+  layoutValues: POJO;
+  animationStyle: (value: number) => DefaultStyle;
   viewRef: React.RefObject<View>;
   sharedStyle: React.MutableRefObject<
     {

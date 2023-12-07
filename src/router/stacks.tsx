@@ -5,6 +5,7 @@ import Home from '~/pages/home';
 //movie start
 import Movie from '~/pages/movie/index';
 import MovieDetail from '~/pages/movie/detail';
+import MovieOrder from '~/pages/movie/order';
 //movie end
 
 const stacks = {
@@ -12,6 +13,7 @@ const stacks = {
   Home,
   Movie,
   MovieDetail,
+  MovieOrder,
 };
 
 export type TRouterParams = {
@@ -20,6 +22,9 @@ export type TRouterParams = {
   Movie: TRouteParams;
   MovieDetail: TRouteParams & {
     id: string;
+    position?: IPosition;
+  };
+  MovieOrder: TRouteParams & {
     position?: IPosition;
   };
 };

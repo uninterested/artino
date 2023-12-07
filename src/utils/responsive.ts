@@ -2,7 +2,7 @@ import {PixelRatio, Dimensions} from 'react-native';
 
 export type TPercent = number | `${number}%`;
 
-const {width, height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('screen');
 
 /**
  * width percent

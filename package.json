@@ -26,7 +26,7 @@
     "react-native-gesture-handler": "^2.13.4",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-photo-view": "git+ssh://git@github.com/uninterested/react-native-photo-view.git#master",
-    "react-native-reanimated": "^3.5.4",
+    "react-native-reanimated": "^3.6.1",
     "react-native-reanimated-carousel": "^3.5.1",
     "react-native-refresh": "git+ssh://git@github.com/uninterested/react-native-refresh.git#master",
     "react-native-root-siblings": "^5.0.1",

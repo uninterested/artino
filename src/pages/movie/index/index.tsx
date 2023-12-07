@@ -6,12 +6,7 @@ import styles from './style';
 import Header from '~/uikit/themes/header';
 import Text from '~/uikit/themes/font-text';
 import BackgroundView from '~/uikit/themes/background-view';
-import Animated, {
-  FadeInDown,
-  FadeInRight,
-  interpolate,
-} from 'react-native-reanimated';
-import {wp} from '~/utils/responsive';
+import Animated, {FadeInDown, FadeInRight} from 'react-native-reanimated';
 import {TouchableOpacity, View} from 'react-native';
 import {IMovieModel} from './types';
 import IconFont from '~/uikit/themes/icon-font';
@@ -24,59 +19,22 @@ const Movie = () => {
   const {primaryColor, borderColor} = useRecoilValue(themeValue);
   const hooks = usePageHooks();
   const [
-    {data, colors, viewRef, activeIndex, sharedStyle, coverIndex},
+    {
+      data,
+      colors,
+      viewRef,
+      activeIndex,
+      sharedStyle,
+      coverIndex,
+      animationStyle,
+      layoutValues,
+    },
     {init, onScroll, onScrollBegin, onScrollEnd, onItemClick, onItemLayout},
   ] = hooks;
-  const itemWidth = wp(50);
-  const itemHeight = wp(95);
-  const centerOffset = wp(25);
-  const offsetX = wp(15);
 
   useEffect(() => {
     init();
   }, []);
-
-  const animationStyle = useCallback(
-    (value: number) => {
-      'worklet';
-
-      const itemGap = interpolate(
-        value,
-        [-3, -2, -1, 0, 1, 2, 3],
-        [offsetX * -2, -offsetX, 0, 0, 0, offsetX, offsetX * 2],
-      );
-
-      const translateX =
-        interpolate(value, [-1, 0, 1], [-itemWidth * 1.2, 0, itemWidth * 1.2]) +
-        centerOffset -
-        itemGap;
-
-      const translateY = interpolate(
-        value,
-        [-1, -0.5, 0, 0.5, 1],
-        [65, 25, 20, 25, 65],
-      );
-
-      const scale = interpolate(
-        value,
-        [-1, -0.5, 0, 0.5, 1],
-        [0.74, 0.8, 1, 0.8, 0.74],
-      );
-
-      return {
-        transform: [
-          {
-            translateX,
-          },
-          {
-            translateY,
-          },
-          {scale},
-        ],
-      };
-    },
-    [centerOffset],
-  );
 
   const renderItem = useCallback(
     (index: number, item: IMovieModel) => {
@@ -93,8 +51,8 @@ const Movie = () => {
             style={[styles.container, styles.box]}
             disabled={activeIndex !== index}
             onPress={onItemClick(item)}>
-            <Animated.Image
-              source={{uri: item.icon, cache: 'force-cache'}}
+            <FastImage
+              source={{uri: item.icon}}
               style={styles.icon}
               resizeMode="cover"
             />
@@ -172,8 +130,8 @@ const Movie = () => {
               end={{x: 0, y: 1}}
             />
             <Carousel
-              width={itemWidth}
-              height={itemHeight}
+              width={layoutValues.itemWidth}
+              height={layoutValues.itemHeight}
               style={styles.carousel}
               loop
               data={data}
