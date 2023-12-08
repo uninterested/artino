@@ -133,6 +133,7 @@ const Movie = () => {
               width={layoutValues.itemWidth}
               height={layoutValues.itemHeight}
               style={styles.carousel}
+              pagingEnabled
               loop
               data={data}
               renderItem={({index, item}) => renderItem(index, item)}

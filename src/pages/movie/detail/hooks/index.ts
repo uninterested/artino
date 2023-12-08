@@ -66,7 +66,8 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
           runOnJS(setLayoutStatus)(next);
         } else {
           // 当next为0的时候，说明需要将蒙层先隐藏，然后在pop
-          maskOpacity.value = withTiming(0, {duration: 0}, () => {
+          maskOpacity.value = withTiming(0, {duration: 0}, fin => {
+            if (!fin) return;
             runOnJS(navigation.pop)();
           });
         }

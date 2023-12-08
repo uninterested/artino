@@ -11,6 +11,7 @@ import {themeValue} from '~/recoil-state/theme';
 
 interface IBackgroundViewProps extends ViewProps {
   level?: 0 | 1 | 2;
+  keys?: string | number;
   style?: StyleProp<ViewStyle>;
   ref?: React.ForwardedRef<View | Animated.View>;
   animated?: boolean;
@@ -23,6 +24,12 @@ interface IBackgroundViewProps extends ViewProps {
     | typeof BaseAnimationBuilder
     | EntryExitAnimationFunction
     | ReanimatedKeyframe;
+
+  exiting?:
+    | BaseAnimationBuilder
+    | typeof BaseAnimationBuilder
+    | EntryExitAnimationFunction
+    | ReanimatedKeyframe;
 }
 
 const BackgroundView: FC<PropsWithChildren<IBackgroundViewProps>> = forwardRef(
@@ -30,7 +37,6 @@ const BackgroundView: FC<PropsWithChildren<IBackgroundViewProps>> = forwardRef(
     const color = useRecoilValue(themeValue);
     const {level = 0, style = {}, ...rest} = props;
     const flattenStyle = StyleSheet.flatten(style);
-
     const background = useMemo(() => {
       switch (level) {
         case 0:
@@ -57,11 +63,17 @@ const BackgroundView: FC<PropsWithChildren<IBackgroundViewProps>> = forwardRef(
     }, [level, color]);
 
     const Comp = (
-      props.entering || props.layout || props.animated ? Animated.View : View
+      props.entering || props.layout || props.exiting || props.animated
+        ? Animated.View
+        : View
     ) as any;
 
     return (
-      <Comp {...rest} ref={ref} style={[props.style, background]}>
+      <Comp
+        {...rest}
+        key={props.keys}
+        ref={ref}
+        style={[props.style, background]}>
         {props.children}
       </Comp>
     );

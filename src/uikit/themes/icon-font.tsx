@@ -10,7 +10,13 @@ import {ReanimatedKeyframe} from 'react-native-reanimated/lib/typescript/reanima
 
 interface IFontTextProps extends TextProps {
   level?: number;
+  animated?: boolean;
   entering?:
+    | BaseAnimationBuilder
+    | typeof BaseAnimationBuilder
+    | EntryExitAnimationFunction
+    | ReanimatedKeyframe;
+  exiting?:
     | BaseAnimationBuilder
     | typeof BaseAnimationBuilder
     | EntryExitAnimationFunction
@@ -34,7 +40,9 @@ const IconFont: FC<PropsWithChildren<IFontTextProps>> = props => {
     }
   }, [level, color]);
 
-  const Comp = (props.entering ? Animated.Text : Text) as any;
+  const Comp = (
+    props.entering || props.animated || props.exiting ? Animated.Text : Text
+  ) as any;
 
   return (
     <Comp {...rest} style={[style, textColor, {fontFamily: 'iconfont'}]}>

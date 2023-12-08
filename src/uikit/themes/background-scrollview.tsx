@@ -4,8 +4,8 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  ViewProps,
   ViewStyle,
+  ScrollViewProps,
 } from 'react-native';
 import Animated, {
   BaseAnimationBuilder,
@@ -16,7 +16,7 @@ import {ReanimatedKeyframe} from 'react-native-reanimated/lib/typescript/reanima
 import {useRecoilValue} from 'recoil';
 import {themeValue} from '~/recoil-state/theme';
 
-interface IBackgroundViewProps extends ViewProps {
+interface IBackgroundViewProps extends ScrollViewProps {
   level?: 0 | 1 | 2;
   style?: StyleProp<ViewStyle>;
   ref?: React.ForwardedRef<View | Animated.View>;
@@ -26,6 +26,11 @@ interface IBackgroundViewProps extends ViewProps {
     | LayoutAnimationFunction
     | typeof BaseAnimationBuilder;
   entering?:
+    | BaseAnimationBuilder
+    | typeof BaseAnimationBuilder
+    | EntryExitAnimationFunction
+    | ReanimatedKeyframe;
+  exiting?:
     | BaseAnimationBuilder
     | typeof BaseAnimationBuilder
     | EntryExitAnimationFunction
@@ -64,13 +69,18 @@ const BackgroundView: FC<PropsWithChildren<IBackgroundViewProps>> = forwardRef(
     }, [level, color]);
 
     const Comp = (
-      props.entering || props.layout || props.animated
+      props.entering || props.layout || props.animated || props.exiting
         ? Animated.ScrollView
         : ScrollView
     ) as any;
 
     return (
-      <Comp {...rest} ref={ref} style={[props.style, background]}>
+      <Comp
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
+        {...rest}
+        ref={ref}
+        style={[props.style, background]}>
         {props.children}
       </Comp>
     );

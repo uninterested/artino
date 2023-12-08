@@ -21,6 +21,11 @@ interface IFontTextProps extends TextProps {
     | typeof BaseAnimationBuilder
     | EntryExitAnimationFunction
     | ReanimatedKeyframe;
+  exiting?:
+    | BaseAnimationBuilder
+    | typeof BaseAnimationBuilder
+    | EntryExitAnimationFunction
+    | ReanimatedKeyframe;
 }
 
 const FontText: FC<PropsWithChildren<IFontTextProps>> = props => {
@@ -42,7 +47,9 @@ const FontText: FC<PropsWithChildren<IFontTextProps>> = props => {
   }, [level, color]);
 
   const Comp = (
-    props.entering || props.layout || props.animated ? Animated.Text : Text
+    props.entering || props.layout || props.animated || props.exiting
+      ? Animated.Text
+      : Text
   ) as any;
 
   return (
