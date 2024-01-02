@@ -246,7 +246,9 @@ const MovieOrder = () => {
                 key={x}>
                 {row.map((col, y) => {
                   if (!col) {
-                    return <View style={[styles.seatElem, styles.center]} />;
+                    return (
+                      <View key={y} style={[styles.seatElem, styles.center]} />
+                    );
                   }
                   return (
                     <TouchableOpacity
