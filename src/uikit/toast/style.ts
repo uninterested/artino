@@ -26,13 +26,13 @@ export default StyleSheet.create({
   icon: {
     width: 36,
     height: 36,
-    marginBottom: 10,
     marginHorizontal: 30,
   },
   message: {
     backgroundColor: 'transparent',
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
+    marginTop: 10,
   },
 });

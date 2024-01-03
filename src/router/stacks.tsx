@@ -1,24 +1,28 @@
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Main from '~/pages/main';
-import Home from '~/pages/home';
 //movie start
 import Movie from '~/pages/movie/index';
 import MovieDetail from '~/pages/movie/detail';
 import MovieOrder from '~/pages/movie/order';
 //movie end
 
+// mini-program start
+import Mini from '~/pages/mini-program';
+// mini-program end
+
 const stacks = {
   Main,
-  Home,
+  // movie
   Movie,
   MovieDetail,
   MovieOrder,
+  // mini
+  Mini,
 };
 
 export type TRouterParams = {
   Main: TRouteParams;
-  Home: TRouteParams;
   Movie: TRouteParams;
   MovieDetail: TRouteParams & {
     id: string;
@@ -27,6 +31,7 @@ export type TRouterParams = {
   MovieOrder: TRouteParams & {
     position?: IPosition;
   };
+  Mini: TRouteParams;
 };
 
 export type keys = keyof TRouterParams;

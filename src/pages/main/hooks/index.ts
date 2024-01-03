@@ -12,6 +12,10 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
         title: '电影票',
         key: 'movie',
       },
+      {
+        title: '小程序',
+        key: 'mini',
+      },
     ];
   }, []);
 
@@ -19,6 +23,9 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
     switch (data.key) {
       case 'movie':
         navigation.navigate('Movie');
+        break;
+      case 'mini':
+        navigation.navigate('Mini');
         break;
       default:
         throw new Error('unknow');

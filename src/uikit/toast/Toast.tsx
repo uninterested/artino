@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {ActivityIndicator, Animated, Image, View} from 'react-native';
 import Text from '~/uikit/themes/font-text';
 import style from './style';
@@ -17,7 +17,7 @@ interface IToastProps {
   message: TMessageProps;
 }
 
-class Toast extends Component<IToastProps> {
+class Toast extends PureComponent<IToastProps> {
   private alphaAni: Animated.Value = new Animated.Value(0);
   private marginTop: Animated.Value = new Animated.Value(0);
   private duration: number = 200;
@@ -63,7 +63,7 @@ class Toast extends Component<IToastProps> {
           <ActivityIndicator
             animating
             color="rgba(255, 255, 255, 0.8)"
-            size={40}
+            size={36}
           />
         );
       case 'success':
@@ -85,6 +85,7 @@ class Toast extends Component<IToastProps> {
 
   private renderMessage = () => {
     const {message} = this.props;
+    if (!message) return null;
     if (React.isValidElement(message)) return message;
     return <Text style={style.message}>{message}</Text>;
   };
