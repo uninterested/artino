@@ -27,12 +27,12 @@ export default StyleSheet.create({
     width: 36,
     height: 36,
     marginHorizontal: 30,
+    marginTop: 10,
   },
   message: {
     backgroundColor: 'transparent',
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
     textAlign: 'center',
-    marginTop: 10,
   },
 });

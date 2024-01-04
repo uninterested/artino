@@ -1,9 +1,19 @@
 import WebView from 'react-native-webview';
-import {handleConsole, handleModal, handleRequest, handleToast} from './utils';
-import {TMessage} from '../types';
+import {
+  handleAbortTask,
+  handleConsole,
+  handleModal,
+  handleRequest,
+  handleToast,
+} from '../handle/utils';
+import {TMessage} from '../../types';
 
 // 处理消息
-export const handleMessage = (message: string, webview: WebView<{}> | null) => {
+export const handleMessage = (
+  message: string,
+  webview: WebView<{}> | null,
+  options: POJO,
+) => {
   try {
     const json = JSON.parse(message) as TMessage;
     switch (json.type) {
@@ -24,7 +34,10 @@ export const handleMessage = (message: string, webview: WebView<{}> | null) => {
         handleModal(json, webview);
         break;
       case '_@request@_':
-        handleRequest(json, webview);
+        handleRequest(json, webview, options);
+        break;
+      case '_@abortTask@_':
+        handleAbortTask(json);
         break;
     }
   } catch (e) {

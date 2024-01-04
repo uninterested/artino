@@ -2,11 +2,16 @@
 // disableAlertBeforeUnload
 const inject = `
 window.AT = {
-    request: function() {
-        return buildPromise(function(id, res, rej) {
-            attachEvent(id, res, rej, options, ["success", "fail", "complete"]);
-            postMessage(buildArgs("request", options, id));
-        })
+    request: function(options) {
+        var id = uuid();
+        attachEvent(id, undefined, undefined, options, ["success", "fail", "complete"]);
+        postMessage(buildArgs("request", options, id));
+        return {
+            a: 1,
+            abort: function() {
+                postMessage(buildArgs("abortTask", { id: id }, id));
+            }
+        }
     },
     showToast: function(options) {
         return buildPromise(function(id, res, rej) {

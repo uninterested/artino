@@ -1,13 +1,12 @@
-import {helper, handleMessage} from './help';
-import promise from './promise';
-import override from './override';
-import inject from './inject';
+import {helper, handleMessage} from './sub/help';
+import promise from './sub/promise';
+import override from './sub/override';
+import inject from './sub/inject';
 
 const sdk = `"use strict";
 ${helper}
 ${override}
-${inject}
-`;
+${inject}`;
 
 export {handleMessage, promise};
 

@@ -31,7 +31,10 @@ export type TRouterParams = {
   MovieOrder: TRouteParams & {
     position?: IPosition;
   };
-  Mini: TRouteParams;
+  Mini: TRouteParams & {
+    appId: string;
+    type: 0 | 1 | 2; // 0体验版 1生产 2开发
+  };
 };
 
 export type keys = keyof TRouterParams;

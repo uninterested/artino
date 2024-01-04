@@ -9,6 +9,7 @@ export interface IPageMethodProps {
 
 export type TArgsType =
   | 'request'
+  | 'abortTask'
   | 'log'
   | 'error'
   | 'warn'

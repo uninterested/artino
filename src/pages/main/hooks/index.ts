@@ -25,7 +25,7 @@ const usePageHooks = (): [IPageResultProps, IPageMethodProps] => {
         navigation.navigate('Movie');
         break;
       case 'mini':
-        navigation.navigate('Mini');
+        navigation.navigate('Mini', {appId: 'atfa8sdy9qbdhsdsdf', type: 0});
         break;
       default:
         throw new Error('unknow');
