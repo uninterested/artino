@@ -1,5 +1,6 @@
 // pool
 const fnPool = `var fnPool = {};
+var socketPool = {};
 function _··invokeEvent(e) {
   if (!e || !e.id) return;
   var id = e.id;

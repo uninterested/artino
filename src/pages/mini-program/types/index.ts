@@ -13,6 +13,7 @@ export type TArgsType =
   | 'abortTask'
   | 'downloadFile'
   | 'uploadFile'
+  | 'socket'
   // debug
   | 'log'
   | 'error'

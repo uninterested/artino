@@ -1,5 +1,5 @@
 import WebView from 'react-native-webview';
-import Axios from 'axios';
+import Axios, {AxiosProgressEvent} from 'axios';
 import FNFetchBlob from 'react-native-fetch-blob';
 import instance from '~/utils/instance';
 import Modal from '~/uikit/modal';
@@ -16,6 +16,10 @@ const buildInvokeFunc = (names: string[], value: any[]) => {
 
 const buildFn = (name: string | number) => {
   return '_@' + name;
+};
+// build Referer
+const buildReferer = (options: POJO) => {
+  return `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
 };
 //#endregion
 
@@ -55,6 +59,9 @@ export const handleMessage = (
         break;
       case '_@uploadFile@_':
         handleUploadFile(json, webview, options);
+        break;
+      case '_@socket@_':
+        handleSocket(json, webview, options);
         break;
     }
   } catch (e) {
@@ -185,7 +192,7 @@ export const handleRequest = async (
     if (!content.header) content.header = {};
     if (!content.header['content-type'])
       content.header['content-type'] = 'application/json;charset=utf-8';
-    content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+    content.header.Referer = buildReferer(options);
     const defaultOptions = {
       url: '',
       method: 'GET',
@@ -224,7 +231,7 @@ export const handleDownloadFile = (
 ) => {
   const {id, content} = message;
   if (!content.header) content.header = {};
-  content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+  content.header.Referer = buildReferer(options);
   if (!['GET', 'POST', 'PUT', 'PATCH'].includes(content.method?.toUpperCase()))
     delete content.method;
   let path = content.filePath;
@@ -291,7 +298,7 @@ export const handleUploadFile = async (
       delete content.timeout;
     if (!content.header['content-type'])
       content.header['content-type'] = 'multipart/form-data;charset=utf-8';
-    content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+    content.header.Referer = buildReferer(options);
     if (
       !['GET', 'POST', 'PUT', 'PATCH'].includes(content.method?.toUpperCase())
     )
@@ -320,6 +327,13 @@ export const handleUploadFile = async (
     const opt = Object.assign(defaultOptions, rest, {
       data: form,
       cancelToken: cancel.token,
+      onUploadProgress: (e: AxiosProgressEvent) => {
+        const {loaded = 0, total = 1} = e;
+        const percent = Math.abs(Math.min(loaded / total, 1));
+        webview?.injectJavaScript(
+          `if (fnPool["${id}"]["onProgress"]) { fnPool["${id}"]["onProgress"](${percent}); }`,
+        );
+      },
     });
     instance.set(id, {task: cancel.cancel, param: 'abort task'});
     const response = await Axios(opt);
@@ -348,4 +362,58 @@ export const handleAbortTask = (message: TMessage) => {
   const task = instance.get(id);
   task.task?.(task.param);
   instance.remove(id);
+};
+
+// 处理连接Websocket
+export const handleSocket = (
+  message: TMessage,
+  webview: WebView<{}> | null,
+  options: POJO,
+) => {
+  const {id, content} = message;
+  if (content[buildFn('type')] === 'connect') {
+    const ws = new WebSocket(content.url, content.protocols);
+    ws.onopen = () => {
+      webview?.injectJavaScript(
+        `if (socketPool["${id}"] && socketPool["${id}"]["onOpen"]) { 
+          socketPool["${id}"]["onOpen"]();
+        }`,
+      );
+    };
+    ws.onmessage = (e: WebSocketMessageEvent) => {
+      webview?.injectJavaScript(
+        `if (socketPool["${id}"] && socketPool["${id}"]["onMessage"]) { 
+          socketPool["${id}"]["onMessage"](${JSON.stringify(e)});
+        }`,
+      );
+    };
+    ws.onclose = (e: WebSocketCloseEvent) => {
+      webview?.injectJavaScript(
+        `if (socketPool["${id}"] && socketPool["${id}"]["onClose"]) { 
+          socketPool["${id}"]["onClose"](${JSON.stringify(e)}); 
+        }
+        delete socketPool["${id}"];`,
+      );
+    };
+    ws.onerror = (e: WebSocketErrorEvent) => {
+      webview?.injectJavaScript(
+        `if (socketPool["${id}"] && socketPool["${id}"]["onError"]) { 
+          socketPool["${id}"]["onError"](${JSON.stringify(e)}); 
+        }`,
+      );
+    };
+    instance.set(id, ws);
+    const event = {
+      id,
+      fnInvoke: buildInvokeFunc(
+        ['_res', 'success', 'complete'],
+        [[null], [null], [null]],
+      ),
+    };
+    webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
+  } else if (content[buildFn('type')] === 'send') {
+    instance.get(id)?.send(content.args.data);
+  } else if (content[buildFn('type')] === 'close') {
+    instance.get(id)?.close();
+  }
 };
