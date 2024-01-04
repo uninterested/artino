@@ -1727,6 +1727,10 @@
   version "15.7.11"
   resolved "https://registry.npmmirror.com/@types/prop-types/-/prop-types-15.7.11.tgz#2596fb352ee96a1379c657734d4b913a613ad563"
 
+"@types/react-native-fetch-blob@^0.10.11":
+  version "0.10.11"
+  resolved "https://registry.npmmirror.com/@types/react-native-fetch-blob/-/react-native-fetch-blob-0.10.11.tgz#ba552b5bad4659435ed3d380f4e5ab1816782944"
+
 "@types/react-native-video@^5.0.18":
   version "5.0.18"
   resolved "https://registry.npmmirror.com/@types/react-native-video/-/react-native-video-5.0.18.tgz#d0cec469e0cdc165e99ad04d500b90726a382253"
@@ -2204,6 +2208,10 @@ babel-preset-jest@^29.6.3:
 balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.npmmirror.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
+
+base-64@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmmirror.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
 
 base64-arraybuffer@^1.0.2:
   version "1.0.2"
@@ -3331,6 +3339,17 @@ glob-parent@^6.0.2:
   resolved "https://registry.npmmirror.com/glob-parent/-/glob-parent-6.0.2.tgz#6d237d99083950c79290f24c7642a3de9a28f9e3"
   dependencies:
     is-glob "^4.0.3"
+
+glob@7.0.6:
+  version "7.0.6"
+  resolved "https://registry.npmmirror.com/glob/-/glob-7.0.6.tgz#211bafaf49e525b8cd93260d14ab136152b3f57a"
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^3.0.2"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
 
 glob@^7.1.3, glob@^7.1.4:
   version "7.2.3"
@@ -5256,6 +5275,13 @@ react-native-devsettings@^1.0.5:
 react-native-fast-image@^8.6.3:
   version "8.6.3"
   resolved "https://registry.npmmirror.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
+
+react-native-fetch-blob@^0.10.8:
+  version "0.10.8"
+  resolved "https://registry.npmmirror.com/react-native-fetch-blob/-/react-native-fetch-blob-0.10.8.tgz#4fc256abae0cb5f10e7c41f28c11b3ff330d72a9"
+  dependencies:
+    base-64 "0.1.0"
+    glob "7.0.6"
 
 react-native-gesture-handler@^2.13.4:
   version "2.13.4"

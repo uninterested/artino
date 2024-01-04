@@ -1,10 +1,12 @@
 import WebView from 'react-native-webview';
 import Axios from 'axios';
-import instance from '../instance';
+import FNFetchBlob, {RNFetchBlob} from 'react-native-fetch-blob';
+import instance from '~/utils/instance';
 import Modal from '~/uikit/modal';
 import Toast from '~/uikit/toast';
 import {TMessage} from '../../types';
 
+//#region function wrap 非紧急情况不要修改
 const buildInvokeFunc = (names: string[], value: any[]) => {
   return names.map((e, i) => ({
     key: e,
@@ -14,6 +16,47 @@ const buildInvokeFunc = (names: string[], value: any[]) => {
 
 const buildFn = (name: string | number) => {
   return '_@' + name;
+};
+//#endregion
+
+// 处理消息
+export const handleMessage = (
+  message: string,
+  webview: WebView<{}> | null,
+  options: POJO,
+) => {
+  try {
+    const json = JSON.parse(message) as TMessage;
+    switch (json.type) {
+      case '_@log@_':
+      case '_@error@_':
+      case '_@warn@_':
+        handleConsole(
+          json.content,
+          json.type.replace('_@', '').replace('@_', ''),
+        );
+      case '_@showToast@_':
+      case '_@hideToast@_':
+      case '_@showLoading@_':
+      case '_@hideLoading@_':
+        handleToast(json, webview);
+        break;
+      case '_@showModal@_':
+        handleModal(json, webview);
+        break;
+      case '_@request@_':
+        handleRequest(json, webview, options);
+        break;
+      case '_@abortTask@_':
+        handleAbortTask(json);
+        break;
+      case '_@downloadFile@_':
+        handleDownloadFile(json, webview, options);
+        break;
+    }
+  } catch (e) {
+    console.log('error: ', e);
+  }
 };
 
 // 处理console
@@ -71,7 +114,7 @@ export const handleToast = (message: TMessage, webview: WebView<{}> | null) => {
       };
     }
   }
-  webview?.injectJavaScript(`invokeEvent(${JSON.stringify(event)});`);
+  webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
 };
 
 // 处理Modal
@@ -100,7 +143,9 @@ export const handleModal = (message: TMessage, webview: WebView<{}> | null) => {
               [[value], [value], [null], [value]],
             ),
           };
-          webview?.injectJavaScript(`invokeEvent(${JSON.stringify(event)});`);
+          webview?.injectJavaScript(
+            `_··invokeEvent(${JSON.stringify(event)});`,
+          );
         },
       })),
     });
@@ -137,8 +182,7 @@ export const handleRequest = async (
     if (!content.header) content.header = {};
     if (!content.header['content-type'])
       content.header['content-type'] = 'application/json;charset=utf-8';
-    if (content.header)
-      content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+    content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
     const defaultOptions = {
       url: '',
       method: 'GET',
@@ -164,7 +208,48 @@ export const handleRequest = async (
   } finally {
     instance.remove(id);
   }
-  webview?.injectJavaScript(`invokeEvent(${JSON.stringify(event)});`);
+  webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
+};
+
+// 处理下载文件
+export const handleDownloadFile = async (
+  message: TMessage,
+  webview: WebView<{}> | null,
+  options: POJO,
+) => {
+  const {id, content} = message;
+  let event;
+  try {
+    if (!content.header) content.header = {};
+    content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+    if (
+      !['GET', 'POST', 'PUT', 'PATCH'].includes(content.method?.toUpperCase())
+    )
+      delete content.method;
+    let path = content.filePath;
+    if (!path) {
+      const sufix = content.url.split('.')[1] || '';
+      path =
+        RNFetchBlob.fs.dirs.CacheDir +
+        `/tmp/${+new Date()}${sufix ? `.${sufix}` : sufix}`;
+    }
+    const response = await RNFetchBlob.config({
+      path,
+      fileCache: true,
+    }).fetch(content.method || 'GET', content.url, {
+      ...content.header,
+    });
+    console.log('ads: ', response);
+  } catch (ex: any) {
+    const err = [ex.message || ex];
+    event = {
+      id,
+      fnInvoke: buildInvokeFunc(['fail', 'complete'], [err, err]),
+    };
+  } finally {
+    instance.remove(id);
+  }
+  webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
 };
 
 // 处理取消任务
