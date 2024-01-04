@@ -8,12 +8,16 @@ export interface IPageMethodProps {
 }
 
 export type TArgsType =
+  // network
   | 'request'
   | 'abortTask'
   | 'downloadFile'
+  | 'uploadFile'
+  // debug
   | 'log'
   | 'error'
   | 'warn'
+  // toast
   | 'showToast'
   | 'hideToast'
   | 'showLoading'

@@ -1,5 +1,7 @@
 const originPostMessage = `var originPostMessage = window.ReactNativeWebView.postMessage;
 window.ReactNativeWebView.postMessage = undefined;
+var originEval = window.eval;
+window.eval = undefined;
 `;
 
 const patch = `

@@ -29,4 +29,19 @@ export default {
       },
     };
   },
+  uploadFile: function (options) {
+    var id = uuid();
+    attachEvent(id, undefined, undefined, options, [
+      'success',
+      'fail',
+      'complete',
+      'onProgress',
+    ]);
+    postMessage(buildArgs('uploadFile', options, id));
+    return {
+      abort: function () {
+        postMessage(buildArgs('abortTask', {id: id}, id));
+      },
+    };
+  },
 };

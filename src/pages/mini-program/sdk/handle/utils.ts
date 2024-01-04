@@ -1,6 +1,6 @@
 import WebView from 'react-native-webview';
 import Axios from 'axios';
-import FNFetchBlob, {RNFetchBlob} from 'react-native-fetch-blob';
+import FNFetchBlob from 'react-native-fetch-blob';
 import instance from '~/utils/instance';
 import Modal from '~/uikit/modal';
 import Toast from '~/uikit/toast';
@@ -53,9 +53,12 @@ export const handleMessage = (
       case '_@downloadFile@_':
         handleDownloadFile(json, webview, options);
         break;
+      case '_@uploadFile@_':
+        handleUploadFile(json, webview, options);
+        break;
     }
   } catch (e) {
-    console.log('error: ', e);
+    // empty code
   }
 };
 
@@ -191,10 +194,12 @@ export const handleRequest = async (
       dataType: 'json',
       responseType: 'json',
     };
-    const opt = Object.assign(defaultOptions, content);
     const cancel = Axios.CancelToken.source();
-    instance.set(id, cancel.cancel);
-    const response = await Axios({...opt, cancelToken: cancel.token});
+    const opt = Object.assign(defaultOptions, content, {
+      cancelToken: cancel.token,
+    });
+    instance.set(id, {task: cancel.cancel, param: 'abort task'});
+    const response = await Axios(opt);
     event = {
       id,
       fnInvoke: buildInvokeFunc(['success', 'complete'], [[response], [null]]),
@@ -212,7 +217,68 @@ export const handleRequest = async (
 };
 
 // 处理下载文件
-export const handleDownloadFile = async (
+export const handleDownloadFile = (
+  message: TMessage,
+  webview: WebView<{}> | null,
+  options: POJO,
+) => {
+  const {id, content} = message;
+  if (!content.header) content.header = {};
+  content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
+  if (!['GET', 'POST', 'PUT', 'PATCH'].includes(content.method?.toUpperCase()))
+    delete content.method;
+  let path = content.filePath;
+  if (!path) {
+    const sufix = content.url.split('?')[0].split('.').pop() || '';
+    path =
+      FNFetchBlob.fs.dirs.CacheDir +
+      `/tmp/${+new Date()}${sufix ? `.${sufix}` : sufix}`;
+  }
+  const task = FNFetchBlob.config({
+    fileCache: true,
+    path,
+  }).fetch(content.method || 'GET', content.url, {
+    ...content.header,
+  });
+  instance.set(id, {task: task.cancel, param: () => {}});
+  task
+    .progress((r: number, t: number) => {
+      const percent = Math.abs(Math.min(r / t, 1));
+      webview?.injectJavaScript(
+        `if (fnPool["${id}"]["onProgress"]) { fnPool["${id}"]["onProgress"](${percent}); }`,
+      );
+    })
+    .then(response => {
+      instance.remove(id);
+      webview?.injectJavaScript(
+        `if (fnPool["${id}"]["onProgress"]) { fnPool["${id}"]["onProgress"](1); }`,
+      );
+      const res = {
+        tempFilePath: path,
+        filePath: path,
+        statusCode: response.respInfo?.status,
+      };
+      const event = {
+        id,
+        fnInvoke: buildInvokeFunc(['success', 'complete'], [[res], [res]]),
+      };
+      webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
+    })
+    .catch((ex: any) => {
+      const err = [ex.message || ex];
+      const event = {
+        id,
+        fnInvoke: buildInvokeFunc(['fail', 'complete'], [err, err]),
+      };
+      webview?.injectJavaScript(`_··invokeEvent(${JSON.stringify(event)});`);
+    })
+    .finally(() => {
+      instance.remove(id);
+    });
+};
+
+// 处理上传文件
+export const handleUploadFile = async (
   message: TMessage,
   webview: WebView<{}> | null,
   options: POJO,
@@ -221,25 +287,49 @@ export const handleDownloadFile = async (
   let event;
   try {
     if (!content.header) content.header = {};
+    if (Object.prototype.toString.call(content.timeout) !== '[object Number]')
+      delete content.timeout;
+    if (!content.header['content-type'])
+      content.header['content-type'] = 'multipart/form-data;charset=utf-8';
     content.header.Referer = `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
     if (
       !['GET', 'POST', 'PUT', 'PATCH'].includes(content.method?.toUpperCase())
     )
       delete content.method;
-    let path = content.filePath;
-    if (!path) {
-      const sufix = content.url.split('.')[1] || '';
-      path =
-        RNFetchBlob.fs.dirs.CacheDir +
-        `/tmp/${+new Date()}${sufix ? `.${sufix}` : sufix}`;
-    }
-    const response = await RNFetchBlob.config({
-      path,
-      fileCache: true,
-    }).fetch(content.method || 'GET', content.url, {
-      ...content.header,
+    const defaultOptions = {
+      url: '',
+      method: 'POST',
+      data: undefined,
+      timeout: 60000,
+      dataType: 'json',
+      responseType: 'json',
+    };
+    const cancel = Axios.CancelToken.source();
+    const {filePath, name, formData, ...rest} = content;
+    const form = new FormData();
+    form.append(name || 'file', {
+      uri: filePath,
+      type: 'application/octet-stream',
+      name: filePath.split('/').pop(),
     });
-    console.log('ads: ', response);
+    if (Object.keys(formData || {}).length) {
+      Object.keys(formData).forEach(key => {
+        form.append(key, formData[key]);
+      });
+    }
+    const opt = Object.assign(defaultOptions, rest, {
+      data: form,
+      cancelToken: cancel.token,
+    });
+    instance.set(id, {task: cancel.cancel, param: 'abort task'});
+    const response = await Axios(opt);
+    event = {
+      id,
+      fnInvoke: buildInvokeFunc(
+        ['success', 'complete'],
+        [[{data: response.data, statusCode: response.status}], [null]],
+      ),
+    };
   } catch (ex: any) {
     const err = [ex.message || ex];
     event = {
@@ -256,6 +346,6 @@ export const handleDownloadFile = async (
 export const handleAbortTask = (message: TMessage) => {
   const {id} = message;
   const task = instance.get(id);
-  task?.('abort task');
+  task.task?.(task.param);
   instance.remove(id);
 };
