@@ -14,9 +14,7 @@ window.confirm = function() {
 // window.alert = function() {
 //     throw new Error("alert is unsupport");
 // };
-`;
-
-const console = `window.console = {
+window.console = {
     log: function() {
         var args = Array.prototype.slice.call(arguments);
         postMessage(buildArgs("log", args), "*");
@@ -29,10 +27,10 @@ const console = `window.console = {
         var args = Array.prototype.slice.call(arguments);
         postMessage(buildArgs("warn", args), "*");
     }
-}`;
+}
+`;
 
 export default `
 ${originPostMessage}
 ${patch}
-${console}
 `;

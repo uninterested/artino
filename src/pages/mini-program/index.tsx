@@ -1,11 +1,11 @@
 import WebView from 'react-native-webview';
 import BackgroundView from '~/uikit/themes/background-view';
 import Headers from '~/uikit/themes/header';
-import sdk, {disableLongPress} from './sdk';
+import {inject} from './sdk';
 import usePageHooks from './hooks';
 
 const Home = () => {
-  const [{webviewRef}, {onMessage}] = usePageHooks();
+  const [{webviewRef, bridge}, {onMessage}] = usePageHooks();
   return (
     <BackgroundView style={{flex: 1}}>
       <Headers
@@ -21,11 +21,12 @@ const Home = () => {
       <WebView
         ref={webviewRef}
         originWhitelist={['*']}
+        webviewDebuggingEnabled
         scalesPageToFit={false}
-        injectedJavaScript={disableLongPress}
-        injectedJavaScriptBeforeContentLoaded={sdk}
+        injectedJavaScript={inject}
+        injectedJavaScriptBeforeContentLoaded={bridge}
         onMessage={onMessage}
-        source={{uri: 'http://192.168.1.101:9999/'}}
+        source={{uri: 'http://172.19.8.4:9999/'}}
       />
     </BackgroundView>
   );

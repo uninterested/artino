@@ -2,6 +2,7 @@ import WebView, {WebViewMessageEvent} from 'react-native-webview';
 
 export interface IPageResultProps {
   webviewRef: React.RefObject<WebView<{}>>;
+  bridge: string;
 }
 export interface IPageMethodProps {
   onMessage: NoopT<WebViewMessageEvent>;

@@ -5,6 +5,7 @@ import instance from '~/utils/instance';
 import Modal from '~/uikit/modal';
 import Toast from '~/uikit/toast';
 import {TMessage} from '../../types';
+import {protocalPath, filePathResolve} from '../config';
 
 //#region function wrap 非紧急情况不要修改
 const buildInvokeFunc = (names: string[], value: any[]) => {
@@ -21,6 +22,7 @@ const buildFn = (name: string | number) => {
 const buildReferer = (options: POJO) => {
   return `https://service.artino.com/${options.appId}/${options.type}/page-frame.html`;
 };
+
 //#endregion
 
 // 处理消息
@@ -237,13 +239,12 @@ export const handleDownloadFile = (
   let path = content.filePath;
   if (!path) {
     const sufix = content.url.split('?')[0].split('.').pop() || '';
-    path =
-      FNFetchBlob.fs.dirs.CacheDir +
-      `/tmp/${+new Date()}${sufix ? `.${sufix}` : sufix}`;
+    path = protocalPath + `/tmp/${+new Date()}${sufix ? `.${sufix}` : sufix}`;
   }
+  const saveLocal = filePathResolve(path, false, options);
   const task = FNFetchBlob.config({
     fileCache: true,
-    path,
+    path: saveLocal,
   }).fetch(content.method || 'GET', content.url, {
     ...content.header,
   });
@@ -315,7 +316,7 @@ export const handleUploadFile = async (
     const {filePath, name, formData, ...rest} = content;
     const form = new FormData();
     form.append(name || 'file', {
-      uri: filePath,
+      uri: filePathResolve(filePath, false, options),
       type: 'application/octet-stream',
       name: filePath.split('/').pop(),
     });
