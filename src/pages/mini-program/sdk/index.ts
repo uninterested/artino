@@ -31,7 +31,7 @@ export {handleMessage, promise};
 export const disableLongPress = `
 var style = document.createElement('style');
 style.type = 'text/css';
-var cssContent = document.createTextNode('body{-webkit-user-select:none;-webkit-user-drag:none;}');
+var cssContent = document.createTextNode('body{-webkit-user-select:none;-webkit-user-drag:none !important;}');
 style.appendChild(cssContent);
 document.body.appendChild(style);
 document.oncontextmenu=function(e){
